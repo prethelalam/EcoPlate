@@ -4,19 +4,29 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width-device-width, initial-scale=1.0" />
     <title>EcoPlate | Donate</title>
-    <link ref="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="styles.css" />
 </head>
+
+</style>
 <body>
-    <header position="sticky" top="0" padding="" background-color="#2a6026" color="white" text-align="center">
-        
-        <nav>
-            <ul>
-                <li><a href="index.html"><img src="logo.png" alt="EcoPlate" width="100" height="100"/></a></li> 
-                <li><a href="donation.html">Donor</a></li>
-                <li><a href="browse.html">Browse</a></li>
-            </ul>
-        </nav>
-    </header>
+    <header position="sticky" top="0" padding="0px, 30px" background-color="#2a6026" color="white" text-align="center" style="font-family:verdana;font-size:30px">
+            <div class="topnav" style="font-family:verdana; color:#aaa">
+                <nav>
+                    <ul>
+                        <a href="index.html"><img src="logo.png" alt="EcoPlate" width="100" height="100"/></a>
+                        <a href="donation.html">Donor</a>
+                        <a href="browse.html">Browse</a>
+                    </ul>
+                </nav>
+            </div>
+        </header>
     <h1>Browse</h1>
-    
+    <br>
+    <section id="items">
+        <div id="foodcontainer" class="foodcontainer" padding="20px" display="flex" flex-wrap="wrap" justify-content="space-around"></div>
+
+        <div id="itemtracker"></div>
+        <script src="index.js"></script>
+        <button type="button" id="loadMoreBtn" onclick="loadMoreItems()">Load More</button>
+    </section>
 </body>
