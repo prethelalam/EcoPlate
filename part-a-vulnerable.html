@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Part A - Vulnerable Login Form (SQL Injection Demo)</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #d9534f;
+            border-bottom: 2px solid #d9534f;
+            padding-bottom: 10px;
+        }
+        .warning {
+            background-color: #fff3cd;
+            border: 1px solid #ffc107;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #d9534f;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #c9302c;
+        }
+        .results {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            display: none;
+        }
+        .sql-display {
+            background-color: #f1f1f1;
+            padding: 10px;
+            border-left: 4px solid #d9534f;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .injection-tips {
+            background-color: #d9edf7;
+            border: 1px solid #bce8f1;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        .injection-tips h3 {
+            margin-top: 0;
+            color: #31708f;
+        }
+        .injection-tips code {
+            background-color: #f5f5f5;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>⚠️ Part A: Vulnerable Login Form</h1>
+        
+        <div class="warning">
+            <strong>Warning:</strong> This form is intentionally vulnerable to SQL injection attacks for educational purposes. 
+            Never use this code in production!
+        </div>
+
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+
+            <button type="submit">Login (Vulnerable)</button>
+        </form>
+
+        <div id="results" class="results">
+            <h3>Query Executed:</h3>
+            <div id="sqlQuery" class="sql-display"></div>
+            
+            <h3>Results:</h3>
+            <div id="queryResults"></div>
+        </div>
+
+        <div class="injection-tips">
+            <h3>SQL Injection Test Cases:</h3>
+            <p>Try these inputs in the <strong>username</strong> field:</p>
+            <ol>
+                <li><code>admin' --</code> (bypasses password check)</li>
+                <li><code>admin' #</code> (MySQL comment syntax)</li>
+                <li><code>' OR 1=1 --</code> (returns all users)</li>
+                <li><code>' OR '1'='1</code> (always true condition)</li>
+                <li><code>admin' OR '1'='1' --</code> (another bypass)</li>
+            </ol>
+            <p><strong>Explanation:</strong> These inputs exploit string concatenation in SQL queries to modify the query logic.</p>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:3000/api';
+
+        document.getElementById('loginForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            try {
+                // Call the vulnerable endpoint
+                const response = await fetch(`${API_BASE_URL}/vulnerable-login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+                
+                // Display results
+                document.getElementById('results').style.display = 'block';
+                document.getElementById('sqlQuery').textContent = data.query;
+                
+                if (data.success && data.results.length > 0) {
+                    let resultsHtml = '<table style="width:100%; border-collapse: collapse;">';
+                    resultsHtml += '<tr style="background-color: #f0f0f0;">';
+                    resultsHtml += '<th style="border: 1px solid #ddd; padding: 8px;">ID</th>';
+                    resultsHtml += '<th style="border: 1px solid #ddd; padding: 8px;">Name</th>';
+                    resultsHtml += '<th style="border: 1px solid #ddd; padding: 8px;">Email</th>';
+                    resultsHtml += '</tr>';
+                    
+                    data.results.forEach(user => {
+                        resultsHtml += '<tr>';
+                        resultsHtml += `<td style="border: 1px solid #ddd; padding: 8px;">${user.id}</td>`;
+                        resultsHtml += `<td style="border: 1px solid #ddd; padding: 8px;">${user.name}</td>`;
+                        resultsHtml += `<td style="border: 1px solid #ddd; padding: 8px;">${user.email}</td>`;
+                        resultsHtml += '</tr>';
+                    });
+                    
+                    resultsHtml += '</table>';
+                    resultsHtml += `<p style="color: green; font-weight: bold; margin-top: 10px;">✓ SQL Injection Successful! Retrieved ${data.results.length} user(s).</p>`;
+                    document.getElementById('queryResults').innerHTML = resultsHtml;
+                } else {
+                    document.getElementById('queryResults').innerHTML = '<p style="color: red;">Login failed or no results returned.</p>';
+                }
+                
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('results').style.display = 'block';
+                document.getElementById('queryResults').innerHTML = '<p style="color: red;">Error: Cannot connect to server. Make sure the backend is running!</p>';
+            }
+        });
+    </script>
+</body>
+</html>
