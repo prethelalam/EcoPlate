@@ -4,7 +4,7 @@ const API_BASE_URL = 'http://localhost:3000/api';
 // State variables
 let allProducts = [];
 let itemsShown = 0;
-const itemsPerPage = 10;
+const itemsPerPage = 2*Math.floor(window.innerWidth/282);
 const itemTracker = document.getElementById('itemtracker');
 
 /**
