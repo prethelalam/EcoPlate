@@ -25,12 +25,16 @@ const productsRouter = require('./routes/products');
 const donationsRouter = require('./routes/donations');
 const donorsRouter = require('./routes/donors');
 const recipientsRouter = require('./routes/recipients');
+const sqlInjectionRouter = require('./routes/sql-injection');
+
 
 // Use routes
 app.use('/api/products', productsRouter);
 app.use('/api/donations', donationsRouter);
 app.use('/api/donors', donorsRouter);
 app.use('/api/recipients', recipientsRouter);
+app.use('/api', sqlInjectionRouter);
+
 
 // Root endpoint
 app.get('/', (req, res) => {
