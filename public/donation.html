@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Donate Food - EcoPlate</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header position="sticky" top="0" padding="0px, 30px" background-color="#2a6026" color="white" text-align="center" style="font-family:verdana;font-size:30px">
+            <div class="topnav" style="font-family:verdana; color:#aaa">
+                <nav>
+                    <ul>
+                        <a href="index.html"><img src="logo.png" alt="EcoPlate" width="100" height="100"/></a>
+                        <a href="donation.html">Donate</a>
+                        <a href="browse.html">Browse</a>
+                    </ul>
+                </nav>
+            </div>
+        </header>
+
+    <div class="container">
+        <h1>Donation</h1>
+
+        <h2>Donor Information</h2>
+        <form id="donationForm">
+            <label>Name:</label>
+            <input type="text" id="donor_name" required>
+            
+            <label>Email:</label>
+            <input type="email" id="donor_email" required>
+            
+            <label>Location:</label>
+            <input type="text" id="donor_location">
+
+            <h2>Items to Donate</h2>
+            
+            <label>Item Name:</label>
+            <input type="text" id="item_name" required>
+            
+            <label>Quantity:</label>
+            <input type="number" id="quantity" min="1" required>
+            
+            <label>Expiration Date:</label>
+            <input type="date" id="expiration_date" required>
+
+            <button type="submit">Submit Donation</button>
+        </form>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:3000/api';
+
+        document.getElementById('donationForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            
+            const donorName = document.getElementById('donor_name').value;
+            const donorEmail = document.getElementById('donor_email').value;
+            const itemName = document.getElementById('item_name').value;
+            const quantity = document.getElementById('quantity').value;
+            const expirationDate = document.getElementById('expiration_date').value;
+            
+            try {
+                // Create product
+                const productResponse = await fetch(`${API_BASE_URL}/products`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        category: 'Donation',
+                        name: itemName,
+                        expiration_date: expirationDate,
+                        quantity: parseInt(quantity)
+                    })
+                });
+                
+                const productData = await productResponse.json();
+                
+                if (productData.success) {
+                    alert('Donation submitted successfully! Thank you!');
+                    document.getElementById('donationForm').reset();
+                } else {
+                    alert('Error: ' + productData.message);
+                }
+                
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Cannot connect to server.');
+            }
+        });
+    </script>
+</body>
+</html>
